@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
           <main>{children}</main>
           <footer>
             Este sitio es un ejemplo de cliente. La verificacion la hace Idantite.
-            La decision se confirma por webhook en nuestro backend, no por la pantalla de captura.
+            Nuestro backend cruza el OCR del webhook con lo que el cliente escribio.
           </footer>
         </div>
       </body>

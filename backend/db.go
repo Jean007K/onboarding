@@ -8,7 +8,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
+
+	"onboarding/identidad"
 
 	_ "modernc.org/sqlite"
 )
@@ -18,24 +21,28 @@ import (
 // queda aqui: quien es el cliente, si ya lo verificamos, y que datos nos
 // devolvieron en el webhook.
 type Solicitud struct {
-	ID               string          `json:"id"`
-	Nombre           string          `json:"nombre"`
-	Apellido         string          `json:"apellido"`
-	Email            string          `json:"email"`
-	Telefono         string          `json:"telefono"`
-	EndUserRef       string          `json:"end_user_ref"`
-	SessionID        string          `json:"session_id"`
-	ShareToken       string          `json:"share_token,omitempty"`
-	Estado           string          `json:"estado"`
-	Decision         string          `json:"decision"`
-	Approved         bool            `json:"approved"`
-	Scores           json.RawMessage `json:"scores,omitempty"`
-	Reasons          json.RawMessage `json:"reasons,omitempty"`
-	Extracted        json.RawMessage `json:"extracted_data,omitempty"`
-	WebhookEvent     string          `json:"webhook_event"`
-	WebhookRecibido  string          `json:"webhook_recibido_at"`
-	CreatedAt        string          `json:"created_at"`
-	UpdatedAt        string          `json:"updated_at"`
+	ID              string               `json:"id"`
+	Nombre          string               `json:"nombre"`
+	Apellido        string               `json:"apellido"`
+	NumeroIdentidad string               `json:"numero_identidad"`
+	RUT             string               `json:"rut"`
+	Email           string               `json:"email"`
+	Telefono        string               `json:"telefono"`
+	EndUserRef      string               `json:"end_user_ref"`
+	SessionID       string               `json:"session_id"`
+	ShareToken      string               `json:"share_token,omitempty"`
+	Estado          string               `json:"estado"`
+	Decision        string               `json:"decision"`
+	Approved        bool                 `json:"approved"`
+	CuentaApta      bool                 `json:"cuenta_apta"`
+	Scores          json.RawMessage      `json:"scores,omitempty"`
+	Reasons         json.RawMessage      `json:"reasons,omitempty"`
+	Extracted       json.RawMessage      `json:"extracted_data,omitempty"`
+	Identidad       *identidad.Resultado `json:"identidad,omitempty"`
+	WebhookEvent    string               `json:"webhook_event"`
+	WebhookRecibido string               `json:"webhook_recibido_at"`
+	CreatedAt       string               `json:"created_at"`
+	UpdatedAt       string               `json:"updated_at"`
 }
 
 func openDB(path string) (*sql.DB, error) {
@@ -60,6 +67,8 @@ CREATE TABLE IF NOT EXISTS solicitudes (
   id TEXT PRIMARY KEY,
   nombre TEXT NOT NULL,
   apellido TEXT NOT NULL,
+  numero_identidad TEXT NOT NULL DEFAULT '',
+  rut TEXT NOT NULL DEFAULT '',
   email TEXT NOT NULL,
   telefono TEXT NOT NULL DEFAULT '',
   end_user_ref TEXT NOT NULL,
@@ -71,6 +80,8 @@ CREATE TABLE IF NOT EXISTS solicitudes (
   scores_json TEXT NOT NULL DEFAULT '',
   reasons_json TEXT NOT NULL DEFAULT '',
   extracted_json TEXT NOT NULL DEFAULT '',
+  cruce_json TEXT NOT NULL DEFAULT '',
+  identidad_coincide INTEGER NOT NULL DEFAULT -1,
   webhook_event TEXT NOT NULL DEFAULT '',
   webhook_recibido_at TEXT NOT NULL DEFAULT '',
   created_at TEXT NOT NULL,
@@ -88,6 +99,31 @@ CREATE TABLE IF NOT EXISTS webhook_log (
   received_at TEXT NOT NULL
 );
 `)
+	if err != nil {
+		return err
+	}
+	for _, col := range []struct{ name, def string }{
+		{"numero_identidad", "TEXT NOT NULL DEFAULT ''"},
+		{"rut", "TEXT NOT NULL DEFAULT ''"},
+		{"cruce_json", "TEXT NOT NULL DEFAULT ''"},
+		{"identidad_coincide", "INTEGER NOT NULL DEFAULT -1"},
+	} {
+		if err := ensureColumn(db, "solicitudes", col.name, col.def); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func ensureColumn(db *sql.DB, table, name, def string) error {
+	_, err := db.Exec("ALTER TABLE " + table + " ADD COLUMN " + name + " " + def)
+	if err == nil {
+		return nil
+	}
+	msg := strings.ToLower(err.Error())
+	if strings.Contains(msg, "duplicate column") {
+		return nil
+	}
 	return err
 }
 
@@ -106,12 +142,13 @@ func newID() string {
 func insertSolicitud(db *sql.DB, s Solicitud) error {
 	_, err := db.Exec(`
 INSERT INTO solicitudes (
-  id, nombre, apellido, email, telefono, end_user_ref, session_id, share_token,
-  estado, decision, approved, scores_json, reasons_json, extracted_json,
+  id, nombre, apellido, numero_identidad, rut, email, telefono, end_user_ref, session_id, share_token,
+  estado, decision, approved, scores_json, reasons_json, extracted_json, cruce_json, identidad_coincide,
   webhook_event, webhook_recibido_at, created_at, updated_at
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		s.ID, s.Nombre, s.Apellido, s.Email, s.Telefono, s.EndUserRef, s.SessionID, s.ShareToken,
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		s.ID, s.Nombre, s.Apellido, s.NumeroIdentidad, s.RUT, s.Email, s.Telefono, s.EndUserRef, s.SessionID, s.ShareToken,
 		s.Estado, s.Decision, boolToInt(s.Approved), rawOrEmpty(s.Scores), rawOrEmpty(s.Reasons), rawOrEmpty(s.Extracted),
+		cruceOrEmpty(s.Identidad), coincideInt(s.Identidad),
 		s.WebhookEvent, s.WebhookRecibido, s.CreatedAt, s.UpdatedAt,
 	)
 	return err
@@ -143,34 +180,18 @@ func listSolicitudes(db *sql.DB) ([]Solicitud, error) {
 		if err != nil {
 			return nil, err
 		}
-		// no devolvemos el share_token en el listado interno
 		s.ShareToken = ""
 		out = append(out, s)
 	}
 	return out, rows.Err()
 }
 
-const solicitudCols = `id, nombre, apellido, email, telefono, end_user_ref, session_id, share_token,
-  estado, decision, approved, scores_json, reasons_json, extracted_json,
+const solicitudCols = `id, nombre, apellido, numero_identidad, rut, email, telefono, end_user_ref, session_id, share_token,
+  estado, decision, approved, scores_json, reasons_json, extracted_json, cruce_json, identidad_coincide,
   webhook_event, webhook_recibido_at, created_at, updated_at`
 
 func scanSolicitud(row *sql.Row) (Solicitud, error) {
-	var s Solicitud
-	var approved int
-	var scores, reasons, extracted string
-	err := row.Scan(
-		&s.ID, &s.Nombre, &s.Apellido, &s.Email, &s.Telefono, &s.EndUserRef, &s.SessionID, &s.ShareToken,
-		&s.Estado, &s.Decision, &approved, &scores, &reasons, &extracted,
-		&s.WebhookEvent, &s.WebhookRecibido, &s.CreatedAt, &s.UpdatedAt,
-	)
-	if err != nil {
-		return s, err
-	}
-	s.Approved = approved == 1
-	s.Scores = toRaw(scores)
-	s.Reasons = toRaw(reasons)
-	s.Extracted = toRaw(extracted)
-	return s, nil
+	return scanSolicitudRows(row)
 }
 
 type rowScanner interface {
@@ -179,11 +200,11 @@ type rowScanner interface {
 
 func scanSolicitudRows(row rowScanner) (Solicitud, error) {
 	var s Solicitud
-	var approved int
-	var scores, reasons, extracted string
+	var approved, coincide int
+	var scores, reasons, extracted, cruce string
 	err := row.Scan(
-		&s.ID, &s.Nombre, &s.Apellido, &s.Email, &s.Telefono, &s.EndUserRef, &s.SessionID, &s.ShareToken,
-		&s.Estado, &s.Decision, &approved, &scores, &reasons, &extracted,
+		&s.ID, &s.Nombre, &s.Apellido, &s.NumeroIdentidad, &s.RUT, &s.Email, &s.Telefono, &s.EndUserRef, &s.SessionID, &s.ShareToken,
+		&s.Estado, &s.Decision, &approved, &scores, &reasons, &extracted, &cruce, &coincide,
 		&s.WebhookEvent, &s.WebhookRecibido, &s.CreatedAt, &s.UpdatedAt,
 	)
 	if err != nil {
@@ -193,6 +214,9 @@ func scanSolicitudRows(row rowScanner) (Solicitud, error) {
 	s.Scores = toRaw(scores)
 	s.Reasons = toRaw(reasons)
 	s.Extracted = toRaw(extracted)
+	s.Identidad = parseCruce(cruce)
+	s.CuentaApta = s.Approved && s.Identidad != nil && s.Identidad.Coincide
+	_ = coincide
 	return s, nil
 }
 
@@ -206,7 +230,66 @@ WHERE session_id=?`,
 		estado, decision, boolToInt(approved), rawOrEmpty(scores), rawOrEmpty(reasons), rawOrEmpty(extracted),
 		event, nowUTC(), nowUTC(), sessionID,
 	)
+	if err != nil {
+		return err
+	}
+	return guardarCruce(db, sessionID, extracted)
+}
+
+func guardarCruce(db *sql.DB, sessionID string, extracted json.RawMessage) error {
+	sol, err := getBySession(db, sessionID)
+	if err != nil {
+		return nil
+	}
+	res := identidad.Cruzar(identidad.Declarado{
+		Nombres:         sol.Nombre,
+		Apellidos:       sol.Apellido,
+		NumeroIdentidad: sol.NumeroIdentidad,
+		RUT:             sol.RUT,
+	}, identidad.FromJSON(extracted))
+	raw, err := json.Marshal(res)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(`UPDATE solicitudes SET cruce_json=?, identidad_coincide=?, updated_at=? WHERE id=?`,
+		string(raw), coincideInt(&res), nowUTC(), sol.ID)
 	return err
+}
+
+func parseCruce(s string) *identidad.Resultado {
+	s = strings.TrimSpace(s)
+	if s == "" || s == "null" {
+		return nil
+	}
+	var r identidad.Resultado
+	if err := json.Unmarshal([]byte(s), &r); err != nil {
+		return nil
+	}
+	if r.Estado == "" {
+		return nil
+	}
+	return &r
+}
+
+func cruceOrEmpty(r *identidad.Resultado) string {
+	if r == nil {
+		return ""
+	}
+	b, err := json.Marshal(r)
+	if err != nil {
+		return ""
+	}
+	return string(b)
+}
+
+func coincideInt(r *identidad.Resultado) int {
+	if r == nil {
+		return -1
+	}
+	if r.Coincide {
+		return 1
+	}
+	return 0
 }
 
 func estadoDesdeDecision(decision string, approved bool) string {

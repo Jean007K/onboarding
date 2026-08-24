@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"onboarding/identidad"
 )
 
 type Server struct {
@@ -30,19 +32,21 @@ func newServer(cfg Config, db *sql.DB) http.Handler {
 
 func (s *Server) health(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, map[string]any{
-		"ok":                    true,
-		"servicio":              "ayiti-onboarding-api",
-		"idantite_key":          s.cfg.IdantiteAPIKey != "",
+		"ok":                      true,
+		"servicio":                "ayiti-onboarding-api",
+		"idantite_key":            s.cfg.IdantiteAPIKey != "",
 		"idantite_webhook_secret": s.cfg.IdantiteWebhookSecret != "",
-		"environment":           s.cfg.IdantiteEnvironment,
+		"environment":             s.cfg.IdantiteEnvironment,
 	})
 }
 
 type crearBody struct {
-	Nombre   string `json:"nombre"`
-	Apellido string `json:"apellido"`
-	Email    string `json:"email"`
-	Telefono string `json:"telefono"`
+	Nombre          string `json:"nombre"`
+	Apellido        string `json:"apellido"`
+	NumeroIdentidad string `json:"numero_identidad"`
+	RUT             string `json:"rut"`
+	Email           string `json:"email"`
+	Telefono        string `json:"telefono"`
 }
 
 func (s *Server) crearSolicitud(w http.ResponseWriter, r *http.Request) {
@@ -51,12 +55,22 @@ func (s *Server) crearSolicitud(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "json invalido")
 		return
 	}
-	in.Nombre = strings.TrimSpace(in.Nombre)
-	in.Apellido = strings.TrimSpace(in.Apellido)
+	in.Nombre = identidad.NormalizarNombre(in.Nombre)
+	in.Apellido = identidad.NormalizarNombre(in.Apellido)
+	in.NumeroIdentidad = identidad.NormalizarDocumento(in.NumeroIdentidad)
+	in.RUT = identidad.NormalizarRUT(in.RUT)
 	in.Email = strings.TrimSpace(in.Email)
 	in.Telefono = strings.TrimSpace(in.Telefono)
 	if in.Nombre == "" || in.Apellido == "" || in.Email == "" {
 		writeErr(w, 400, "faltan nombre, apellido o email")
+		return
+	}
+	if in.NumeroIdentidad == "" || identidad.CompactarID(in.NumeroIdentidad) == "" {
+		writeErr(w, 400, "falta el numero de identidad")
+		return
+	}
+	if in.RUT == "" || identidad.CompactarID(in.RUT) == "" {
+		writeErr(w, 400, "falta el RUT")
 		return
 	}
 	if s.cfg.IdantiteAPIKey == "" {
@@ -68,15 +82,17 @@ func (s *Server) crearSolicitud(w http.ResponseWriter, r *http.Request) {
 	now := nowUTC()
 	ref := "ayiti-" + id[:12]
 	sol := Solicitud{
-		ID:         id,
-		Nombre:     in.Nombre,
-		Apellido:   in.Apellido,
-		Email:      in.Email,
-		Telefono:   in.Telefono,
-		EndUserRef: ref,
-		Estado:     "creando_sesion",
-		CreatedAt:  now,
-		UpdatedAt:  now,
+		ID:              id,
+		Nombre:          in.Nombre,
+		Apellido:        in.Apellido,
+		NumeroIdentidad: in.NumeroIdentidad,
+		RUT:             in.RUT,
+		Email:           in.Email,
+		Telefono:        in.Telefono,
+		EndUserRef:      ref,
+		Estado:          "creando_sesion",
+		CreatedAt:       now,
+		UpdatedAt:       now,
 	}
 	if err := insertSolicitud(s.db, sol); err != nil {
 		log.Println("db insert:", err)

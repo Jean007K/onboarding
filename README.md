@@ -19,12 +19,13 @@ Captura de identidad (de ellos, no nuestra): https://validacion.genbia.qzz.io
 
 ## Como se usa, en corto
 
-1. El usuario llena nombre, apellido y correo en nuestra web.
-2. Nuestro backend llama `POST /v2/sessions` con la API key. Nunca ponemos esa key en el navegador.
+1. El usuario llena nombres, apellidos, numero de identidad, RUT y correo en nuestra web.
+2. El backend limpia esos campos (espacios, mayusculas) y llama `POST /v2/sessions` con la API key. Nunca ponemos esa key en el navegador.
 3. Mandamos al usuario a `validacion.genbia.qzz.io/?session=...&t=...`.
 4. El usuario se saca la selfie y la foto del documento ahi.
 5. Idantite procesa y nos pega un webhook firmado a `/webhooks/idantite`.
-6. El usuario vuelve a `/resultado?id=...`. Esa pagina lee NUESTRA base, no cree en el redirect.
+6. Ademas de guardar la decision, el modulo `identidad` cruza el OCR con lo que el cliente escribio.
+7. El usuario vuelve a `/resultado?id=...`. Esa pagina lee NUESTRA base: verificacion de Idantite y si los datos coinciden.
 
 La fuente de verdad es el webhook. El `return_url` solo trae a la persona de vuelta.
 

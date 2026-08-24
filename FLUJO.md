@@ -50,7 +50,20 @@ Si cambias una coma del JSON, la firma deja de servir. Por eso el handler lee `i
 ## Estados que guardamos nosotros
 
 - `creando_sesion` / `esperando_captura` — todavia no hay decision
-- `aprobado` — decision APPROVE
+- `aprobado` — decision APPROVE (Idantite). No implica que los datos del formulario coincidan.
 - `rechazado` — decision REJECT
 - `revision` — decision REVIEW (un humano en el panel de ellos)
 - `procesando` — llego algo sin decision clara
+
+## Cruce de identidad (modulo `identidad`)
+
+Cuando llega el webhook (o una consulta a la API), el backend compara lo declarado con `extracted_data`:
+
+- nombres
+- apellidos
+- numero de identidad (`document_number`)
+- RUT
+
+Espacios, mayusculas y acentos no cuentan como diferencia. Un nombre mas corto que el del documento ("Jean" vs "JEAN KENEL") si coincide; un nombre de mas, no.
+
+El JSON de cada expediente trae `identidad` (estado `coincide` / `no_coincide` / `incompleto`) y `cuenta_apta` (true solo si Idantite aprobo Y el cruce coincide).
