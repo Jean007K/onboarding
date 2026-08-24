@@ -3,7 +3,7 @@ import { I18nProvider } from "./components/I18nProvider";
 import Shell from "./components/Shell";
 
 export const metadata = {
-  title: "Ayiti — account opening",
+  title: "Onboarding — account opening",
   description: "Customer onboarding demo using Idantite for identity verification",
 };
 

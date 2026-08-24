@@ -5,7 +5,7 @@ export const LANGS = [
 ];
 
 const es = {
-  meta: { brand: "Ayiti", tagline: "Apertura de cuenta" },
+  meta: { brand: "Onboarding", tagline: "Apertura de cuenta" },
   nav: { new: "Nueva solicitud", files: "Expedientes", how: "Como funciona" },
   lang: { group: "Idioma" },
   footer:
@@ -41,19 +41,19 @@ const es = {
     tocCruce: "La comparacion",
     tocNo: "Lo que no viaja",
     two: "Dos sistemas, no uno",
-    ayiti: "Ayiti (este sitio)",
+    ayiti: "Onboarding (este sitio)",
     ayitiP:
       "Formulario, expediente en SQLite, pantalla de resultado y el cruce de nombres / apellidos / RUT. Backend en Go. La API key de Idantite vive solo ahi, nunca en el navegador.",
     idantiteP:
-      "Sesion de verificacion, captura (selfie + documento), OCR, face match y el webhook firmado. Las fotos se quedan en su almacenamiento. Ayiti no las recibe.",
+      "Sesion de verificacion, captura (selfie + documento), OCR, face match y el webhook firmado. Las fotos se quedan en su almacenamiento. Onboarding no las recibe.",
     same:
       "Si tu empresa usa Idantite de verdad, tu backend hace el mismo papel que este: guardar tu cliente, crear la sesion, recibir el webhook y decidir si abres la cuenta.",
     path: "El camino de los datos",
     pathP:
       "La fuente de verdad no es la pantalla a la que vuelve el usuario. Es el webhook que Idantite pega a nuestro servidor, con firma HMAC.",
     s1t: "1. El cliente escribe en el formulario",
-    s1: "Nombres, apellidos, RUT, correo y telefono. Si hay espacios de mas o todo en minusculas, el navegador lo limpia al salir del campo y el backend lo vuelve a normalizar antes de guardar. Eso no es Idantite: es Ayiti cuidando su propio expediente.",
-    s2t: "2. Se envian al backend de Ayiti",
+    s1: "Nombres, apellidos, RUT, correo y telefono. Si hay espacios de mas o todo en minusculas, el navegador lo limpia al salir del campo y el backend lo vuelve a normalizar antes de guardar. Eso no es Idantite: es Onboarding cuidando su propio expediente.",
+    s2t: "2. Se envian al backend de Onboarding",
     s2a: "El navegador llama ",
     s2b: " a ",
     s2c: ". No lleva la API key. El servidor crea una fila en SQLite (el expediente de esta empresa) y recien ahi habla con Idantite: ",
@@ -63,11 +63,11 @@ const es = {
     s3t: "3. Idantite responde con una sesion de captura",
     s3a: "Devuelve ",
     s3b: " y ",
-    s3c: ". Ayiti los guarda y manda al navegador a ",
+    s3c: ". Onboarding los guarda y manda al navegador a ",
     s3d: ". El celular nunca ve nuestra key: el ",
     s3e: " es una llave chica, de esa sesion, que caduca.",
     s4t: "4. La persona se saca selfie y documento",
-    s4: "Eso ocurre en la web de Idantite, no en Ayiti. Ellos procesan OCR y face match. Nosotros no recibimos las imagenes. Recibimos decision, scores y texto extraido del documento.",
+    s4: "Eso ocurre en la web de Idantite, no en Onboarding. Ellos procesan OCR y face match. Nosotros no recibimos las imagenes. Recibimos decision, scores y texto extraido del documento.",
     s5t: "5. Idantite nos pega el webhook",
     s5a: ". Header ",
     s5b: " = HMAC-SHA256 del body crudo con el secret que guardamos al crear el webhook. Si la firma no cuadra, respondemos 401 y no actualizamos el expediente. Si cuadra, 200 y guardamos.",
@@ -78,9 +78,9 @@ const es = {
     s6d: " como ultimo recurso. El webhook sigue siendo la via diaria.",
     compare: "La comparacion interna",
     compareP:
-      "Idantite responde a otra pregunta: selfie y foto del documento son la misma persona? No mira lo que el cliente escribio en el formulario de Ayiti. Esa segunda pregunta la hace este backend.",
+      "Idantite responde a otra pregunta: selfie y foto del documento son la misma persona? No mira lo que el cliente escribio en el formulario de Onboarding. Esa segunda pregunta la hace este backend.",
     thField: "Campo",
-    thAyiti: "Lo que guardo Ayiti",
+    thOnboarding: "Lo que guardo Onboarding",
     thHook: "Lo que llega en el webhook",
     formClean: "Formulario, ya limpio",
     formRut: "Formulario (puntos y DV unificados)",
@@ -92,8 +92,8 @@ const es = {
     apta3: "no coincide",
     apta4: ": no se abre la cuenta.",
     noTravel: "Lo que no viaja",
-    no1: "La API key no sale del servidor de Ayiti. El JavaScript del navegador no la tiene.",
-    no2: "Las fotos no llegan a este backend. El operador las ve en el panel de Idantite, no en los expedientes de Ayiti.",
+    no1: "La API key no sale del servidor de Onboarding. El JavaScript del navegador no la tiene.",
+    no2: "Las fotos no llegan a este backend. El operador las ve en el panel de Idantite, no en los expedientes de Onboarding.",
     no3a: "Volver a ",
     no3b: " no prueba nada por si solo. Si el webhook no llego, el caso sigue pendiente.",
     try: "Probar una solicitud",
@@ -181,7 +181,7 @@ const es = {
 };
 
 const en = {
-  meta: { brand: "Ayiti", tagline: "Account opening" },
+  meta: { brand: "Onboarding", tagline: "Account opening" },
   nav: { new: "New application", files: "Files", how: "How it works" },
   lang: { group: "Language" },
   footer:
@@ -217,19 +217,19 @@ const en = {
     tocCruce: "The comparison",
     tocNo: "What does not travel",
     two: "Two systems, not one",
-    ayiti: "Ayiti (this site)",
+    ayiti: "Onboarding (this site)",
     ayitiP:
       "Form, SQLite file, result screen, and the match of given names / family names / RUT. Go backend. The Idantite API key lives only there, never in the browser.",
     idantiteP:
-      "Verification session, capture (selfie + document), OCR, face match, and the signed webhook. Photos stay in their storage. Ayiti does not receive them.",
+      "Verification session, capture (selfie + document), OCR, face match, and the signed webhook. Photos stay in their storage. Onboarding does not receive them.",
     same:
       "If your company uses Idantite for real, your backend plays this same role: store your customer, create the session, receive the webhook, and decide whether to open the account.",
     path: "The path of the data",
     pathP:
       "The source of truth is not the screen the user returns to. It is the webhook Idantite posts to our server, with an HMAC signature.",
     s1t: "1. The customer fills the form",
-    s1: "Given names, family names, RUT, email and phone. Extra spaces or all-lowercase are cleaned in the browser on blur, then again on the backend before save. That is not Idantite: it is Ayiti keeping its own file clean.",
-    s2t: "2. They are sent to Ayiti's backend",
+    s1: "Given names, family names, RUT, email and phone. Extra spaces or all-lowercase are cleaned in the browser on blur, then again on the backend before save. That is not Idantite: it is Onboarding keeping its own file clean.",
+    s2t: "2. They are sent to Onboarding's backend",
     s2a: "The browser calls ",
     s2b: " on ",
     s2c: ". It does not carry the API key. The server inserts a SQLite row (this company's file) and only then talks to Idantite: ",
@@ -239,11 +239,11 @@ const en = {
     s3t: "3. Idantite returns a capture session",
     s3a: "It returns ",
     s3b: " and ",
-    s3c: ". Ayiti stores them and sends the browser to ",
+    s3c: ". Onboarding stores them and sends the browser to ",
     s3d: ". The phone never sees our key: ",
     s3e: " is a small, short-lived token for that session.",
     s4t: "4. The person takes a selfie and document photo",
-    s4: "That happens on Idantite's site, not Ayiti. They run OCR and face match. We do not receive the images. We receive a decision, scores, and text extracted from the document.",
+    s4: "That happens on Idantite's site, not Onboarding. They run OCR and face match. We do not receive the images. We receive a decision, scores, and text extracted from the document.",
     s5t: "5. Idantite posts the webhook",
     s5a: ". Header ",
     s5b: " = HMAC-SHA256 of the raw body with the secret we saved when creating the webhook. If the signature does not match, we answer 401 and do not update the file. If it matches, 200 and we save.",
@@ -254,9 +254,9 @@ const en = {
     s6d: " as a last resort. The webhook remains the daily path.",
     compare: "The internal comparison",
     compareP:
-      "Idantite answers a different question: are the selfie and the document photo the same person? It does not look at what the customer typed on Ayiti's form. This backend asks that second question.",
+      "Idantite answers a different question: are the selfie and the document photo the same person? It does not look at what the customer typed on Onboarding's form. This backend asks that second question.",
     thField: "Field",
-    thAyiti: "What Ayiti stored",
+    thOnboarding: "What Onboarding stored",
     thHook: "What arrives in the webhook",
     formClean: "Form, already cleaned",
     formRut: "Form (dots and check digit unified)",
@@ -267,8 +267,8 @@ const en = {
     apta3: "does not match",
     apta4: ": the account is not opened.",
     noTravel: "What does not travel",
-    no1: "The API key never leaves Ayiti's server. Browser JavaScript does not have it.",
-    no2: "Photos do not reach this backend. Operators see them in the Idantite panel, not in Ayiti's files.",
+    no1: "The API key never leaves Onboarding's server. Browser JavaScript does not have it.",
+    no2: "Photos do not reach this backend. Operators see them in the Idantite panel, not in Onboarding's files.",
     no3a: "Returning to ",
     no3b: " proves nothing by itself. If the webhook has not arrived, the case stays pending.",
     try: "Try an application",
@@ -356,7 +356,7 @@ const en = {
 };
 
 const fr = {
-  meta: { brand: "Ayiti", tagline: "Ouverture de compte" },
+  meta: { brand: "Onboarding", tagline: "Ouverture de compte" },
   nav: { new: "Nouvelle demande", files: "Dossiers", how: "Comment ca marche" },
   lang: { group: "Langue" },
   footer:
@@ -392,19 +392,19 @@ const fr = {
     tocCruce: "La comparaison",
     tocNo: "Ce qui ne voyage pas",
     two: "Deux systemes, pas un",
-    ayiti: "Ayiti (ce site)",
+    ayiti: "Onboarding (ce site)",
     ayitiP:
       "Formulaire, dossier SQLite, ecran de resultat et le croisement prenoms / noms / RUT. Backend en Go. La cle API Idantite vit seulement la, jamais dans le navigateur.",
     idantiteP:
-      "Session de verification, capture (selfie + document), OCR, face match et le webhook signe. Les photos restent dans leur stockage. Ayiti ne les recoit pas.",
+      "Session de verification, capture (selfie + document), OCR, face match et le webhook signe. Les photos restent dans leur stockage. Onboarding ne les recoit pas.",
     same:
       "Si votre entreprise utilise Idantite pour de vrai, votre backend joue le meme role : enregistrer votre client, creer la session, recevoir le webhook et decider d'ouvrir le compte.",
     path: "Le chemin des donnees",
     pathP:
       "La source de verite n'est pas l'ecran ou l'utilisateur revient. C'est le webhook qu'Idantite envoie a notre serveur, avec une signature HMAC.",
     s1t: "1. Le client ecrit dans le formulaire",
-    s1: "Prenoms, noms, RUT, courriel et telephone. S'il y a des espaces en trop ou tout en minuscules, le navigateur nettoie en quittant le champ et le backend normalise encore avant d'enregistrer. Ce n'est pas Idantite : c'est Ayiti qui soigne son propre dossier.",
-    s2t: "2. Elles partent vers le backend d'Ayiti",
+    s1: "Prenoms, noms, RUT, courriel et telephone. S'il y a des espaces en trop ou tout en minuscules, le navigateur nettoie en quittant le champ et le backend normalise encore avant d'enregistrer. Ce n'est pas Idantite : c'est Onboarding qui soigne son propre dossier.",
+    s2t: "2. Elles partent vers le backend d'Onboarding",
     s2a: "Le navigateur appelle ",
     s2b: " sur ",
     s2c: ". Il n'emporte pas la cle API. Le serveur cree une ligne SQLite (le dossier de cette entreprise) et seulement ensuite parle a Idantite : ",
@@ -414,11 +414,11 @@ const fr = {
     s3t: "3. Idantite repond avec une session de capture",
     s3a: "Il renvoie ",
     s3b: " et ",
-    s3c: ". Ayiti les enregistre et envoie le navigateur vers ",
+    s3c: ". Onboarding les enregistre et envoie le navigateur vers ",
     s3d: ". Le telephone ne voit jamais notre cle : le ",
     s3e: " est une petite cle de cette session, qui expire.",
     s4t: "4. La personne prend un selfie et une photo du document",
-    s4: "Cela se passe sur le site d'Idantite, pas chez Ayiti. Ils font l'OCR et le face match. Nous ne recevons pas les images. Nous recevons la decision, les scores et le texte extrait du document.",
+    s4: "Cela se passe sur le site d'Idantite, pas chez Onboarding. Ils font l'OCR et le face match. Nous ne recevons pas les images. Nous recevons la decision, les scores et le texte extrait du document.",
     s5t: "5. Idantite nous envoie le webhook",
     s5a: ". En-tete ",
     s5b: " = HMAC-SHA256 du corps brut avec le secret enregistre a la creation du webhook. Si la signature ne correspond pas, nous repondons 401 et n'actualisons pas le dossier. Si elle correspond, 200 et nous enregistrons.",
@@ -429,9 +429,9 @@ const fr = {
     s6d: " en dernier recours. Le webhook reste le chemin quotidien.",
     compare: "La comparaison interne",
     compareP:
-      "Idantite repond a une autre question : le selfie et la photo du document sont-ils la meme personne ? Il ne regarde pas ce que le client a ecrit dans le formulaire d'Ayiti. Cette deuxieme question, c'est ce backend qui la pose.",
+      "Idantite repond a une autre question : le selfie et la photo du document sont-ils la meme personne ? Il ne regarde pas ce que le client a ecrit dans le formulaire d'Onboarding. Cette deuxieme question, c'est ce backend qui la pose.",
     thField: "Champ",
-    thAyiti: "Ce qu'Ayiti a enregistre",
+    thOnboarding: "Ce qu'Onboarding a enregistre",
     thHook: "Ce qui arrive dans le webhook",
     formClean: "Formulaire, deja nettoye",
     formRut: "Formulaire (points et cle unifies)",
@@ -442,8 +442,8 @@ const fr = {
     apta3: "ne coincide pas",
     apta4: " : le compte n'est pas ouvert.",
     noTravel: "Ce qui ne voyage pas",
-    no1: "La cle API ne quitte pas le serveur d'Ayiti. Le JavaScript du navigateur ne l'a pas.",
-    no2: "Les photos n'arrivent pas a ce backend. L'operateur les voit dans le panneau Idantite, pas dans les dossiers d'Ayiti.",
+    no1: "La cle API ne quitte pas le serveur d'Onboarding. Le JavaScript du navigateur ne l'a pas.",
+    no2: "Les photos n'arrivent pas a ce backend. L'operateur les voit dans le panneau Idantite, pas dans les dossiers d'Onboarding.",
     no3a: "Revenir a ",
     no3b: " ne prouve rien a lui seul. Si le webhook n'est pas arrive, le dossier reste en attente.",
     try: "Essayer une demande",

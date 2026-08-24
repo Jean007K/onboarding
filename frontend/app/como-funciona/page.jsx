@@ -9,7 +9,7 @@ export default function ComoFuncionaPage() {
       <h1>{t("how.title")}</h1>
       <p className="lede">
         {t("how.ledeBefore")}
-        <strong>Ayiti</strong>
+        <strong>Onboarding</strong>
         {t("how.ledeAfter")}
       </p>
 
