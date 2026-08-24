@@ -6,7 +6,7 @@ import (
 )
 
 // CompactarID deja solo letras y digitos, en mayusculas.
-// Sirve para RUT (puntos y guion) y para numero de documento (B00.147.414).
+// Sirve para comparar RUT con o sin puntos y guion.
 func CompactarID(s string) string {
 	var b strings.Builder
 	b.Grow(len(s))
@@ -16,13 +16,6 @@ func CompactarID(s string) string {
 		}
 	}
 	return b.String()
-}
-
-// NormalizarDocumento guarda el numero de identidad recortado y en mayusculas,
-// sin espacios de mas. Conserva puntos si el cliente los escribio.
-func NormalizarDocumento(s string) string {
-	s = strings.ToUpper(CompactarEspacios(s))
-	return s
 }
 
 // NormalizarRUT recorta, mayusculas, y si se puede lo deja con puntos y DV.

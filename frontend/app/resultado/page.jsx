@@ -75,8 +75,8 @@ function ResultadoInner() {
           <span>{data.id}</span>
           <b>Persona declarada</b>
           <span>{data.nombre} {data.apellido}</span>
-          <b>Identidad / RUT</b>
-          <span>{data.numero_identidad || "—"} · {data.rut || "—"}</span>
+          <b>RUT</b>
+          <span>{data.rut || "—"}</span>
           <b>Referencia</b>
           <span>{data.end_user_ref}</span>
           <b>Sesion Idantite</b>

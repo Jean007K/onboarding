@@ -41,12 +41,11 @@ func (s *Server) health(w http.ResponseWriter, r *http.Request) {
 }
 
 type crearBody struct {
-	Nombre          string `json:"nombre"`
-	Apellido        string `json:"apellido"`
-	NumeroIdentidad string `json:"numero_identidad"`
-	RUT             string `json:"rut"`
-	Email           string `json:"email"`
-	Telefono        string `json:"telefono"`
+	Nombre   string `json:"nombre"`
+	Apellido string `json:"apellido"`
+	RUT      string `json:"rut"`
+	Email    string `json:"email"`
+	Telefono string `json:"telefono"`
 }
 
 func (s *Server) crearSolicitud(w http.ResponseWriter, r *http.Request) {
@@ -57,16 +56,11 @@ func (s *Server) crearSolicitud(w http.ResponseWriter, r *http.Request) {
 	}
 	in.Nombre = identidad.NormalizarNombre(in.Nombre)
 	in.Apellido = identidad.NormalizarNombre(in.Apellido)
-	in.NumeroIdentidad = identidad.NormalizarDocumento(in.NumeroIdentidad)
 	in.RUT = identidad.NormalizarRUT(in.RUT)
 	in.Email = strings.TrimSpace(in.Email)
 	in.Telefono = strings.TrimSpace(in.Telefono)
 	if in.Nombre == "" || in.Apellido == "" || in.Email == "" {
 		writeErr(w, 400, "faltan nombre, apellido o email")
-		return
-	}
-	if in.NumeroIdentidad == "" || identidad.CompactarID(in.NumeroIdentidad) == "" {
-		writeErr(w, 400, "falta el numero de identidad")
 		return
 	}
 	if in.RUT == "" || identidad.CompactarID(in.RUT) == "" {
@@ -82,17 +76,16 @@ func (s *Server) crearSolicitud(w http.ResponseWriter, r *http.Request) {
 	now := nowUTC()
 	ref := "ayiti-" + id[:12]
 	sol := Solicitud{
-		ID:              id,
-		Nombre:          in.Nombre,
-		Apellido:        in.Apellido,
-		NumeroIdentidad: in.NumeroIdentidad,
-		RUT:             in.RUT,
-		Email:           in.Email,
-		Telefono:        in.Telefono,
-		EndUserRef:      ref,
-		Estado:          "creando_sesion",
-		CreatedAt:       now,
-		UpdatedAt:       now,
+		ID:         id,
+		Nombre:     in.Nombre,
+		Apellido:   in.Apellido,
+		RUT:        in.RUT,
+		Email:      in.Email,
+		Telefono:   in.Telefono,
+		EndUserRef: ref,
+		Estado:     "creando_sesion",
+		CreatedAt:  now,
+		UpdatedAt:  now,
 	}
 	if err := insertSolicitud(s.db, sol); err != nil {
 		log.Println("db insert:", err)

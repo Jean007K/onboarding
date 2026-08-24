@@ -46,26 +46,27 @@ func TestNormalizarRUT(t *testing.T) {
 
 func TestCruzarCoincidenAunqueCajaYPuntos(t *testing.T) {
 	d := Declarado{
-		Nombres:         "  jean  kenel ",
-		Apellidos:       "calixte",
-		NumeroIdentidad: "b00.147.414",
-		RUT:             "25925129k",
+		Nombres:   "  jean  kenel ",
+		Apellidos: "calixte",
+		RUT:       "25925129k",
 	}
 	e := Extraido{
-		Nombres:         "JEAN KENEL",
-		Apellidos:       "CALIXTE",
-		NumeroIdentidad: "B00.147.414",
-		RUT:             "25.925.129-K",
+		Nombres:   "JEAN KENEL",
+		Apellidos: "CALIXTE",
+		RUT:       "25.925.129-K",
 	}
 	r := Cruzar(d, e)
 	if !r.Coincide || r.Estado != EstadoCoincide {
 		t.Fatalf("estado=%s coincide=%v resumen=%s campos=%v", r.Estado, r.Coincide, r.Resumen, r.Campos)
 	}
+	if len(r.Campos) != 3 {
+		t.Fatalf("el cruce debe ser nombres, apellidos y RUT, no documento: %d campos", len(r.Campos))
+	}
 }
 
 func TestCruzarNombreParcialDelDocumento(t *testing.T) {
-	d := Declarado{Nombres: "Jean", Apellidos: "Calixte", NumeroIdentidad: "B00.147.414", RUT: "25.925.129-K"}
-	e := Extraido{Nombres: "JEAN KENEL", Apellidos: "CALIXTE", NumeroIdentidad: "B00.147.414", RUT: "25.925.129-K"}
+	d := Declarado{Nombres: "Jean", Apellidos: "Calixte", RUT: "25.925.129-K"}
+	e := Extraido{Nombres: "JEAN KENEL", Apellidos: "CALIXTE", RUT: "25.925.129-K"}
 	r := Cruzar(d, e)
 	if !r.Coincide {
 		t.Fatalf("Jean deberia caber en JEAN KENEL: %#v", r.Campos)
@@ -73,8 +74,8 @@ func TestCruzarNombreParcialDelDocumento(t *testing.T) {
 }
 
 func TestCruzarNombreDeMasNoCoincide(t *testing.T) {
-	d := Declarado{Nombres: "Jean Pedro", Apellidos: "Calixte", NumeroIdentidad: "B00.147.414", RUT: "25.925.129-K"}
-	e := Extraido{Nombres: "JEAN KENEL", Apellidos: "CALIXTE", NumeroIdentidad: "B00.147.414", RUT: "25.925.129-K"}
+	d := Declarado{Nombres: "Jean Pedro", Apellidos: "Calixte", RUT: "25.925.129-K"}
+	e := Extraido{Nombres: "JEAN KENEL", Apellidos: "CALIXTE", RUT: "25.925.129-K"}
 	r := Cruzar(d, e)
 	if r.Coincide || r.Estado != EstadoNoCoincide {
 		t.Fatalf("nombre extra no deberia coincidir: %#v", r)
@@ -82,8 +83,8 @@ func TestCruzarNombreDeMasNoCoincide(t *testing.T) {
 }
 
 func TestCruzarOtraPersona(t *testing.T) {
-	d := Declarado{Nombres: "Maria", Apellidos: "Lopez", NumeroIdentidad: "A11.222.333", RUT: "11.111.111-1"}
-	e := Extraido{Nombres: "JEAN KENEL", Apellidos: "CALIXTE", NumeroIdentidad: "B00.147.414", RUT: "25.925.129-K"}
+	d := Declarado{Nombres: "Maria", Apellidos: "Lopez", RUT: "11.111.111-1"}
+	e := Extraido{Nombres: "JEAN KENEL", Apellidos: "CALIXTE", RUT: "25.925.129-K"}
 	r := Cruzar(d, e)
 	if r.Coincide || r.Estado != EstadoNoCoincide {
 		t.Fatalf("otra persona deberia no coincidir: %#v", r)
@@ -96,8 +97,8 @@ func TestCruzarOtraPersona(t *testing.T) {
 }
 
 func TestCruzarAcentos(t *testing.T) {
-	d := Declarado{Nombres: "José", Apellidos: "Nuñez", NumeroIdentidad: "X1", RUT: "1-9"}
-	e := Extraido{Nombres: "JOSE", Apellidos: "NUNEZ", NumeroIdentidad: "X1", RUT: "1-9"}
+	d := Declarado{Nombres: "José", Apellidos: "Nuñez", RUT: "1-9"}
+	e := Extraido{Nombres: "JOSE", Apellidos: "NUNEZ", RUT: "1-9"}
 	r := Cruzar(d, e)
 	if !r.Coincide {
 		t.Fatalf("acentos no deberian romper el cruce: %#v", r.Campos)
@@ -105,11 +106,25 @@ func TestCruzarAcentos(t *testing.T) {
 }
 
 func TestCruzarOCRIncompleto(t *testing.T) {
-	d := Declarado{Nombres: "Jean", Apellidos: "Calixte", NumeroIdentidad: "B00.147.414", RUT: "25.925.129-K"}
+	d := Declarado{Nombres: "Jean", Apellidos: "Calixte", RUT: "25.925.129-K"}
 	e := Extraido{Nombres: "JEAN KENEL", Apellidos: "CALIXTE"}
 	r := Cruzar(d, e)
 	if r.Estado != EstadoIncompleto || r.Coincide {
-		t.Fatalf("sin RUT ni documento en OCR: %#v", r)
+		t.Fatalf("sin RUT en OCR: %#v", r)
+	}
+}
+
+func TestCruzarIgnoraNumeroDeDocumentoDelOCR(t *testing.T) {
+	d := Declarado{Nombres: "Jean", Apellidos: "Calixte", RUT: "25.925.129-K"}
+	e := FromJSON(json.RawMessage(`{
+      "nombres": "JEAN KENEL",
+      "apellidos": "CALIXTE",
+      "document_number": "OTRO-NUMERO",
+      "rut": "25.925.129-K"
+    }`))
+	r := Cruzar(d, e)
+	if !r.Coincide {
+		t.Fatalf("el numero de documento del OCR no debe entrar al cruce: %#v", r)
 	}
 }
 
@@ -122,7 +137,7 @@ func TestFromJSONApproveFixture(t *testing.T) {
       "rut": "25.925.129-K"
     }`)
 	e := FromJSON(raw)
-	if e.Nombres != "JEAN KENEL" || e.Apellidos != "CALIXTE" || e.NumeroIdentidad != "B00.147.414" || e.RUT != "25.925.129-K" {
+	if e.Nombres != "JEAN KENEL" || e.Apellidos != "CALIXTE" || e.RUT != "25.925.129-K" {
 		t.Fatalf("extraido mal parseado: %#v", e)
 	}
 }

@@ -2,10 +2,9 @@ package identidad
 
 // Declarado es lo que el cliente escribio en el formulario de Ayiti.
 type Declarado struct {
-	Nombres         string
-	Apellidos       string
-	NumeroIdentidad string
-	RUT             string
+	Nombres   string
+	Apellidos string
+	RUT       string
 }
 
 type EstadoCampo string
@@ -45,7 +44,6 @@ func Cruzar(d Declarado, e Extraido) Resultado {
 	campos := []Campo{
 		compararNombre("nombres", "Nombres", d.Nombres, e.Nombres),
 		compararNombre("apellidos", "Apellidos", d.Apellidos, e.Apellidos),
-		compararID("numero_identidad", "Numero de identidad", d.NumeroIdentidad, e.NumeroIdentidad),
 		compararID("rut", "RUT", d.RUT, e.RUT),
 	}
 

@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { api } from "../lib/api";
-import { tidyDocumento, tidyNombre, tidyRut, tituloNombre } from "../lib/datos";
+import { tidyNombre, tidyRut, tituloNombre } from "../lib/datos";
 
 const inicial = {
   nombre: "",
   apellido: "",
-  numero_identidad: "",
   rut: "",
   email: "",
   telefono: "",
@@ -26,10 +25,6 @@ export default function HomePage() {
     setForm((prev) => ({ ...prev, [k]: tituloNombre(prev[k]) }));
   }
 
-  function blurDocumento() {
-    setForm((prev) => ({ ...prev, numero_identidad: tidyDocumento(prev.numero_identidad) }));
-  }
-
   function blurRut() {
     setForm((prev) => ({ ...prev, rut: tidyRut(prev.rut) }));
   }
@@ -42,7 +37,6 @@ export default function HomePage() {
       ...form,
       nombre: tituloNombre(form.nombre),
       apellido: tituloNombre(form.apellido),
-      numero_identidad: tidyDocumento(form.numero_identidad),
       rut: tidyRut(form.rut),
       email: tidyNombre(form.email).toLowerCase(),
       telefono: tidyNombre(form.telefono),
@@ -99,32 +93,16 @@ export default function HomePage() {
             />
           </div>
         </div>
-        <div className="grid">
-          <div>
-            <label htmlFor="numero_identidad">Numero de identidad</label>
-            <input
-              id="numero_identidad"
-              name="numero_identidad"
-              required
-              placeholder="B00.147.414"
-              value={form.numero_identidad}
-              onChange={(e) => set("numero_identidad", e.target.value)}
-              onBlur={blurDocumento}
-            />
-          </div>
-          <div>
-            <label htmlFor="rut">RUT</label>
-            <input
-              id="rut"
-              name="rut"
-              required
-              placeholder="25.925.129-K"
-              value={form.rut}
-              onChange={(e) => set("rut", e.target.value)}
-              onBlur={blurRut}
-            />
-          </div>
-        </div>
+        <label htmlFor="rut">RUT</label>
+        <input
+          id="rut"
+          name="rut"
+          required
+          placeholder="25.925.129-K"
+          value={form.rut}
+          onChange={(e) => set("rut", e.target.value)}
+          onBlur={blurRut}
+        />
         <label htmlFor="email">Correo</label>
         <input
           id="email"
@@ -144,7 +122,7 @@ export default function HomePage() {
           onChange={(e) => set("telefono", e.target.value)}
         />
         <p className="hint">
-          Al salir de nombres, identidad o RUT, recortamos espacios y unificamos
+          Al salir de nombres o RUT, recortamos espacios y unificamos
           mayusculas. El backend vuelve a hacer lo mismo antes de guardar.
         </p>
         <button type="submit" disabled={busy}>
@@ -155,8 +133,7 @@ export default function HomePage() {
       <div className="steps">
         <div>
           <b>1. Tus datos</b>
-          Nombre, apellido, numero de identidad y RUT quedan en nuestra SQLite,
-          ya limpios.
+          Nombre, apellido y RUT quedan en nuestra SQLite, ya limpios.
         </div>
         <div>
           <b>2. Captura</b>

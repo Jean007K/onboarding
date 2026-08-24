@@ -19,7 +19,7 @@ Captura de identidad (de ellos, no nuestra): https://validacion.genbia.qzz.io
 
 ## Como se usa, en corto
 
-1. El usuario llena nombres, apellidos, numero de identidad, RUT y correo en nuestra web.
+1. El usuario llena nombres, apellidos, RUT y correo en nuestra web.
 2. El backend limpia esos campos (espacios, mayusculas) y llama `POST /v2/sessions` con la API key. Nunca ponemos esa key en el navegador.
 3. Mandamos al usuario a `validacion.genbia.qzz.io/?session=...&t=...`.
 4. El usuario se saca la selfie y la foto del documento ahi.

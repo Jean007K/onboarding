@@ -61,7 +61,6 @@ Cuando llega el webhook (o una consulta a la API), el backend compara lo declara
 
 - nombres
 - apellidos
-- numero de identidad (`document_number`)
 - RUT
 
 Espacios, mayusculas y acentos no cuentan como diferencia. Un nombre mas corto que el del documento ("Jean" vs "JEAN KENEL") si coincide; un nombre de mas, no.

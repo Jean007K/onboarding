@@ -4,10 +4,6 @@ export function tidyNombre(s) {
     .replace(/\s+/g, " ");
 }
 
-export function tidyDocumento(s) {
-  return tidyNombre(s).toUpperCase();
-}
-
 export function tidyRut(s) {
   const compact = String(s || "")
     .toUpperCase()

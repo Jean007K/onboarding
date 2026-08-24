@@ -8,15 +8,15 @@ import (
 // Config guarda lo que este backend necesita para hablar con Idantite
 // y para saber a donde devolver al usuario despues de la captura.
 type Config struct {
-	Port                 string
-	DBPath               string
-	IdantiteAPIURL       string
-	IdantiteAPIKey       string
+	Port                  string
+	DBPath                string
+	IdantiteAPIURL        string
+	IdantiteAPIKey        string
 	IdantiteWebhookSecret string
-	IdantiteCaptureURL   string
-	IdantiteEnvironment  string
-	PublicAppURL         string
-	CORSOrigin           string
+	IdantiteCaptureURL    string
+	IdantiteEnvironment   string
+	PublicAppURL          string
+	CORSOrigin            string
 }
 
 func loadConfig() Config {

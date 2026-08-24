@@ -24,7 +24,6 @@ type Solicitud struct {
 	ID              string               `json:"id"`
 	Nombre          string               `json:"nombre"`
 	Apellido        string               `json:"apellido"`
-	NumeroIdentidad string               `json:"numero_identidad"`
 	RUT             string               `json:"rut"`
 	Email           string               `json:"email"`
 	Telefono        string               `json:"telefono"`
@@ -146,7 +145,7 @@ INSERT INTO solicitudes (
   estado, decision, approved, scores_json, reasons_json, extracted_json, cruce_json, identidad_coincide,
   webhook_event, webhook_recibido_at, created_at, updated_at
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		s.ID, s.Nombre, s.Apellido, s.NumeroIdentidad, s.RUT, s.Email, s.Telefono, s.EndUserRef, s.SessionID, s.ShareToken,
+		s.ID, s.Nombre, s.Apellido, "", s.RUT, s.Email, s.Telefono, s.EndUserRef, s.SessionID, s.ShareToken,
 		s.Estado, s.Decision, boolToInt(s.Approved), rawOrEmpty(s.Scores), rawOrEmpty(s.Reasons), rawOrEmpty(s.Extracted),
 		cruceOrEmpty(s.Identidad), coincideInt(s.Identidad),
 		s.WebhookEvent, s.WebhookRecibido, s.CreatedAt, s.UpdatedAt,
@@ -201,15 +200,16 @@ type rowScanner interface {
 func scanSolicitudRows(row rowScanner) (Solicitud, error) {
 	var s Solicitud
 	var approved, coincide int
-	var scores, reasons, extracted, cruce string
+	var scores, reasons, extracted, cruce, numeroIdentidad string
 	err := row.Scan(
-		&s.ID, &s.Nombre, &s.Apellido, &s.NumeroIdentidad, &s.RUT, &s.Email, &s.Telefono, &s.EndUserRef, &s.SessionID, &s.ShareToken,
+		&s.ID, &s.Nombre, &s.Apellido, &numeroIdentidad, &s.RUT, &s.Email, &s.Telefono, &s.EndUserRef, &s.SessionID, &s.ShareToken,
 		&s.Estado, &s.Decision, &approved, &scores, &reasons, &extracted, &cruce, &coincide,
 		&s.WebhookEvent, &s.WebhookRecibido, &s.CreatedAt, &s.UpdatedAt,
 	)
 	if err != nil {
 		return s, err
 	}
+	_ = numeroIdentidad
 	s.Approved = approved == 1
 	s.Scores = toRaw(scores)
 	s.Reasons = toRaw(reasons)
@@ -242,10 +242,9 @@ func guardarCruce(db *sql.DB, sessionID string, extracted json.RawMessage) error
 		return nil
 	}
 	res := identidad.Cruzar(identidad.Declarado{
-		Nombres:         sol.Nombre,
-		Apellidos:       sol.Apellido,
-		NumeroIdentidad: sol.NumeroIdentidad,
-		RUT:             sol.RUT,
+		Nombres:   sol.Nombre,
+		Apellidos: sol.Apellido,
+		RUT:       sol.RUT,
 	}, identidad.FromJSON(extracted))
 	raw, err := json.Marshal(res)
 	if err != nil {

@@ -24,17 +24,16 @@ func TestNormalizaYCruzaConSQLite(t *testing.T) {
 	id := newID()
 	now := nowUTC()
 	sol := Solicitud{
-		ID:              id,
-		Nombre:          identidad.NormalizarNombre("  jean  kenel "),
-		Apellido:        identidad.NormalizarNombre("calixte "),
-		NumeroIdentidad: identidad.NormalizarDocumento("b00.147.414"),
-		RUT:             identidad.NormalizarRUT("25925129k"),
-		Email:           "a@b.c",
-		EndUserRef:      "ayiti-test",
-		SessionID:       "sess-1",
-		Estado:          "esperando_captura",
-		CreatedAt:       now,
-		UpdatedAt:       now,
+		ID:         id,
+		Nombre:     identidad.NormalizarNombre("  jean  kenel "),
+		Apellido:   identidad.NormalizarNombre("calixte "),
+		RUT:        identidad.NormalizarRUT("25925129k"),
+		Email:      "a@b.c",
+		EndUserRef: "ayiti-test",
+		SessionID:  "sess-1",
+		Estado:     "esperando_captura",
+		CreatedAt:  now,
+		UpdatedAt:  now,
 	}
 	if err := insertSolicitud(db, sol); err != nil {
 		t.Fatal(err)
@@ -65,7 +64,7 @@ func TestNormalizaYCruzaConSQLite(t *testing.T) {
 	}
 }
 
-func TestCrearSolicitudRequiereIdentidadYRut(t *testing.T) {
+func TestCrearSolicitudRequiereRUT(t *testing.T) {
 	db, err := openDB(filepath.Join(t.TempDir(), "t.db"))
 	if err != nil {
 		t.Fatal(err)
@@ -78,7 +77,15 @@ func TestCrearSolicitudRequiereIdentidadYRut(t *testing.T) {
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 	if rec.Code != 400 {
-		t.Fatalf("sin identidad deberia ser 400, fue %d %s", rec.Code, rec.Body.String())
+		t.Fatalf("sin RUT deberia ser 400, fue %d %s", rec.Code, rec.Body.String())
+	}
+
+	req2 := httptest.NewRequest(http.MethodPost, "/api/solicitudes", strings.NewReader(`{"nombre":"jean","apellido":"calixte","email":"a@b.c","rut":"25925129k"}`))
+	req2.Header.Set("Content-Type", "application/json")
+	rec2 := httptest.NewRecorder()
+	h.ServeHTTP(rec2, req2)
+	if rec2.Code != 503 {
+		t.Fatalf("con RUT y sin API key deberia ser 503 (no pedir documento), fue %d %s", rec2.Code, rec2.Body.String())
 	}
 }
 
@@ -96,7 +103,7 @@ func TestHTTPWebhookFirmaYCruce(t *testing.T) {
 	now := nowUTC()
 	if err := insertSolicitud(db, Solicitud{
 		ID: id, Nombre: "Jean Kenel", Apellido: "Calixte",
-		NumeroIdentidad: "B00.147.414", RUT: "25.925.129-K",
+		RUT:   "25.925.129-K",
 		Email: "a@b.c", EndUserRef: "ref", SessionID: "sess-http",
 		Estado: "esperando_captura", CreatedAt: now, UpdatedAt: now,
 	}); err != nil {

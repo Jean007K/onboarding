@@ -61,7 +61,6 @@ export default function DetallePage() {
       <div className="panel">
         <div className="kv">
           <b>Nombre declarado</b><span>{data.nombre} {data.apellido}</span>
-          <b>Numero de identidad</b><span>{data.numero_identidad || "—"}</span>
           <b>RUT</b><span>{data.rut || "—"}</span>
           <b>Correo</b><span>{data.email}</span>
           <b>Telefono</b><span>{data.telefono || "-"}</span>

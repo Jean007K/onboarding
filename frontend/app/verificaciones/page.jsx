@@ -28,7 +28,7 @@ export default function ListaPage() {
             <tr>
               <th>Fecha</th>
               <th>Persona</th>
-              <th>Identidad</th>
+              <th>RUT</th>
               <th>Verificacion</th>
               <th>Datos</th>
               <th></th>
@@ -44,7 +44,7 @@ export default function ListaPage() {
                 <tr key={s.id}>
                   <td>{(s.created_at || "").replace("T", " ").slice(0, 19)}</td>
                   <td>{s.nombre} {s.apellido}</td>
-                  <td>{s.numero_identidad || "—"}</td>
+                  <td>{s.rut || "—"}</td>
                   <td><span className={`badge ${s.estado}`}>{s.estado}</span></td>
                   <td>{badgeCruce(s.identidad)}</td>
                   <td><a href={`/verificaciones/${s.id}`}>abrir</a></td>
