@@ -98,7 +98,6 @@ export default function HomePage() {
           id="rut"
           name="rut"
           required
-          placeholder="25.925.129-K"
           value={form.rut}
           onChange={(e) => set("rut", e.target.value)}
           onBlur={blurRut}
