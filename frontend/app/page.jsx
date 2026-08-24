@@ -62,7 +62,8 @@ export default function HomePage() {
         de mas o escribes en minusculas, lo corregimos al salir del campo.
         Despues te pedimos selfie y foto del documento (Idantite). La cuenta
         solo se da por buena si el webhook confirma la identidad y esos datos
-        coinciden con lo que escribiste aqui.
+        coinciden con lo que escribiste aqui.{" "}
+        <a href="/como-funciona">Como se envian, reciben y comparan los datos</a>.
       </p>
 
       <form className="panel" onSubmit={onSubmit}>

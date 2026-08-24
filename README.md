@@ -12,6 +12,7 @@ Esto no es el producto Idantite. Esto es el lado del cliente: lo que TU tienes q
 ## URLs
 
 - Web: https://onboarding.ayiti.cc.cd
+- Como funciona (explicacion publica): https://onboarding.ayiti.cc.cd/como-funciona
 - API: https://api.onboarding.ayiti.cc.cd
 - Webhook (pegar esto en el panel de Idantite): https://api.onboarding.ayiti.cc.cd/webhooks/idantite
 

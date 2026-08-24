@@ -21,12 +21,15 @@ export default function RootLayout({ children }) {
             <nav>
               <a href="/">Nueva solicitud</a>
               <a href="/verificaciones">Expedientes</a>
+              <a href="/como-funciona">Como funciona</a>
             </nav>
           </header>
           <main>{children}</main>
           <footer>
             Este sitio es un ejemplo de cliente. La verificacion la hace Idantite.
             Nuestro backend cruza el OCR del webhook con lo que el cliente escribio.
+            {" "}
+            <a href="/como-funciona">Como funciona</a>.
           </footer>
         </div>
       </body>
