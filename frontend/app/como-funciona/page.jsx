@@ -1,194 +1,164 @@
-export const metadata = {
-  title: "Como funciona — Ayiti",
-  description:
-    "Como este cliente envia los datos a Idantite, recibe el webhook, los guarda y compara el formulario con el documento.",
-};
+"use client";
+
+import { useI18n } from "../components/I18nProvider";
 
 export default function ComoFuncionaPage() {
+  const { t } = useI18n();
   return (
     <article className="explain">
-      <h1>Como esta armado este onboarding</h1>
+      <h1>{t("how.title")}</h1>
       <p className="lede">
-        Esta web no es Idantite. Es <strong>Ayiti</strong>, un cliente de ejemplo:
-        el banco o la empresa que quiere abrir una cuenta. Idantite solo verifica
-        la identidad. Aqui se ve, en orden, que hace cada lado: como se envian
-        los datos, como llegan, donde se guardan y como se comparan.
+        {t("how.ledeBefore")}
+        <strong>Ayiti</strong>
+        {t("how.ledeAfter")}
       </p>
 
-      <nav className="toc" aria-label="En esta pagina">
-        <a href="#piezas">Las piezas</a>
-        <a href="#camino">El camino</a>
-        <a href="#cruce">La comparacion</a>
-        <a href="#no-viaja">Lo que no viaja</a>
+      <nav className="toc" aria-label={t("how.toc")}>
+        <a href="#piezas">{t("how.tocPiezas")}</a>
+        <a href="#camino">{t("how.tocCamino")}</a>
+        <a href="#cruce">{t("how.tocCruce")}</a>
+        <a href="#no-viaja">{t("how.tocNo")}</a>
       </nav>
 
-      <h2 id="piezas">Dos sistemas, no uno</h2>
+      <h2 id="piezas">{t("how.two")}</h2>
       <div className="who">
         <div>
-          <b>Ayiti (este sitio)</b>
-          <p>
-            Formulario, expediente en SQLite, pantalla de resultado y el cruce
-            de nombres / apellidos / RUT. Backend en Go. La API key de Idantite
-            vive solo ahi, nunca en el navegador.
-          </p>
+          <b>{t("how.ayiti")}</b>
+          <p>{t("how.ayitiP")}</p>
         </div>
         <div>
           <b>Idantite</b>
-          <p>
-            Sesion de verificacion, captura (selfie + documento), OCR, face
-            match y el webhook firmado. Las fotos se quedan en su almacenamiento.
-            Ayiti no las recibe.
-          </p>
+          <p>{t("how.idantiteP")}</p>
         </div>
       </div>
-      <p>
-        Si tu empresa usa Idantite de verdad, tu backend hace el mismo papel
-        que este: guardar tu cliente, crear la sesion, recibir el webhook y
-        decidir si abres la cuenta.
-      </p>
+      <p>{t("how.same")}</p>
 
-      <h2 id="camino">El camino de los datos</h2>
-      <p>
-        La fuente de verdad no es la pantalla a la que vuelve el usuario. Es
-        el webhook que Idantite pega a nuestro servidor, con firma HMAC.
-      </p>
+      <h2 id="camino">{t("how.path")}</h2>
+      <p>{t("how.pathP")}</p>
 
       <div className="flow">
         <article>
-          <h3>1. El cliente escribe en el formulario</h3>
+          <h3>{t("how.s1t")}</h3>
+          <p>{t("how.s1")}</p>
+        </article>
+        <article>
+          <h3>{t("how.s2t")}</h3>
           <p>
-            Nombres, apellidos, RUT, correo y telefono. Si hay espacios de mas
-            o todo en minusculas, el navegador lo limpia al salir del campo y
-            el backend lo vuelve a normalizar antes de guardar. Eso no es
-            Idantite: es Ayiti cuidando su propio expediente.
+            {t("how.s2a")}
+            <code>POST /api/solicitudes</code>
+            {t("how.s2b")}
+            <code>api.onboarding.ayiti.cc.cd</code>
+            {t("how.s2c")}
+            <code>POST /v2/sessions</code>
+            {t("how.s2d")}
+            <code>X-API-Key</code>
+            {t("how.s2e")}
+            <code>end_user_ref</code>
+            {t("how.s2f")}
           </p>
         </article>
         <article>
-          <h3>2. Se envian al backend de Ayiti</h3>
+          <h3>{t("how.s3t")}</h3>
           <p>
-            El navegador llama <code>POST /api/solicitudes</code> a{" "}
-            <code>api.onboarding.ayiti.cc.cd</code>. No lleva la API key. El
-            servidor crea una fila en SQLite (el expediente de esta empresa) y
-            recien ahi habla con Idantite: <code>POST /v2/sessions</code> con
-            header <code>X-API-Key</code> y un <code>end_user_ref</code> nuestro,
-            para saber despues de quien era el resultado.
+            {t("how.s3a")}
+            <code>session_id</code>
+            {t("how.s3b")}
+            <code>share_token</code>
+            {t("how.s3c")}
+            <code>validacion.genbia.qzz.io/?session=…&amp;t=…</code>
+            {t("how.s3d")}
+            <code>t=</code>
+            {t("how.s3e")}
           </p>
         </article>
         <article>
-          <h3>3. Idantite responde con una sesion de captura</h3>
-          <p>
-            Devuelve <code>session_id</code> y <code>share_token</code>. Ayiti
-            los guarda y manda al navegador a{" "}
-            <code>validacion.genbia.qzz.io/?session=…&amp;t=…</code>. El celular
-            nunca ve nuestra key: el <code>t=</code> es una llave chica, de esa
-            sesion, que caduca.
-          </p>
+          <h3>{t("how.s4t")}</h3>
+          <p>{t("how.s4")}</p>
         </article>
         <article>
-          <h3>4. La persona se saca selfie y documento</h3>
+          <h3>{t("how.s5t")}</h3>
           <p>
-            Eso ocurre en la web de Idantite, no en Ayiti. Ellos procesan OCR y
-            face match. Nosotros no recibimos las imagenes. Recibimos decision,
-            scores y texto extraido del documento.
-          </p>
-        </article>
-        <article>
-          <h3>5. Idantite nos pega el webhook</h3>
-          <p>
-            <code>POST /webhooks/idantite</code>. Header{" "}
-            <code>X-IDANTITE-Signature</code> = HMAC-SHA256 del body crudo con
-            el secret que guardamos al crear el webhook. Si la firma no cuadra,
-            respondemos 401 y no actualizamos el expediente. Si cuadra, 200 y
-            guardamos.
+            <code>POST /webhooks/idantite</code>
+            {t("how.s5a")}
+            <code>X-IDANTITE-Signature</code>
+            {t("how.s5b")}
           </p>
           <pre>{`X-IDANTITE-Signature = hex(HMAC-SHA256(secret, body_crudo))`}</pre>
         </article>
         <article>
-          <h3>6. Se guarda en SQLite y se compara</h3>
+          <h3>{t("how.s6t")}</h3>
           <p>
-            En el mismo expediente quedan: estado de Idantite (aprobado,
-            rechazado, revision), scores, OCR y el resultado del modulo{" "}
-            <code>identidad</code>. La pagina <code>/resultado</code> no le
-            cree al redirect: lee esta base. Si el webhook tarda, el backend
-            puede consultar <code>GET /v2/sessions/:id</code> como ultimo
-            recurso. El webhook sigue siendo la via diaria.
+            {t("how.s6a")}
+            <code>identidad</code>
+            {t("how.s6b")}
+            <code>/resultado</code>
+            {t("how.s6c")}
+            <code>GET /v2/sessions/:id</code>
+            {t("how.s6d")}
           </p>
         </article>
       </div>
 
-      <h2 id="cruce">La comparacion interna</h2>
-      <p>
-        Idantite responde a otra pregunta: ¿selfie y foto del documento son la
-        misma persona? No mira lo que el cliente escribio en el formulario de
-        Ayiti. Esa segunda pregunta la hace este backend.
-      </p>
+      <h2 id="cruce">{t("how.compare")}</h2>
+      <p>{t("how.compareP")}</p>
       <table>
         <thead>
           <tr>
-            <th>Campo</th>
-            <th>Lo que guardo Ayiti</th>
-            <th>Lo que llega en el webhook</th>
+            <th>{t("how.thField")}</th>
+            <th>{t("how.thAyiti")}</th>
+            <th>{t("how.thHook")}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Nombres</td>
-            <td>Formulario, ya limpio</td>
+            <td>{t("fields.nombres")}</td>
+            <td>{t("how.formClean")}</td>
             <td>
               <code>extracted_data.nombres</code>
             </td>
           </tr>
           <tr>
-            <td>Apellidos</td>
-            <td>Formulario, ya limpio</td>
+            <td>{t("fields.apellidos")}</td>
+            <td>{t("how.formClean")}</td>
             <td>
               <code>extracted_data.apellidos</code>
             </td>
           </tr>
           <tr>
-            <td>RUT</td>
-            <td>Formulario (puntos y DV unificados)</td>
+            <td>{t("fields.rut")}</td>
+            <td>{t("how.formRut")}</td>
             <td>
               <code>extracted_data.rut</code>
             </td>
           </tr>
         </tbody>
       </table>
+      <p>{t("how.compareNote")}</p>
       <p>
-        Espacios, mayusculas y acentos no cuentan como diferencia. Un nombre
-        mas corto que el del documento (Jean frente a JEAN KENEL) si puede
-        coincidir. Un nombre de mas, no. El numero de documento del OCR no se
-        pide ni se cruza: solo el RUT.
-      </p>
-      <p>
-        La cuenta se da por buena solo si las dos cosas salen bien: Idantite
-        aprobo <em>y</em> el cruce coincide (<code>cuenta_apta</code>). Si
-        aprobo el documento de otra persona, el expediente queda verificado
-        pero <strong>no coincide</strong>: no se abre la cuenta.
+        {t("how.apta")}
+        <code>cuenta_apta</code>
+        {t("how.apta2")}
+        <strong>{t("how.apta3")}</strong>
+        {t("how.apta4")}
       </p>
 
-      <h2 id="no-viaja">Lo que no viaja</h2>
+      <h2 id="no-viaja">{t("how.noTravel")}</h2>
       <ul>
+        <li>{t("how.no1")}</li>
+        <li>{t("how.no2")}</li>
         <li>
-          La API key no sale del servidor de Ayiti. El JavaScript del
-          navegador no la tiene.
-        </li>
-        <li>
-          Las fotos no llegan a este backend. El operador las ve en el panel
-          de Idantite, no en los expedientes de Ayiti.
-        </li>
-        <li>
-          Volver a <code>/resultado</code> no prueba nada por si solo. Si el
-          webhook no llego, el caso sigue pendiente.
+          {t("how.no3a")}
+          <code>/resultado</code>
+          {t("how.no3b")}
         </li>
       </ul>
 
       <p className="actions">
         <a className="btn" href="/">
-          Probar una solicitud
+          {t("how.try")}
         </a>{" "}
         <a className="btn ghost" href="/verificaciones">
-          Ver expedientes
+          {t("how.seeFiles")}
         </a>
       </p>
     </article>

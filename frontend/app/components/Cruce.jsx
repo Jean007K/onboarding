@@ -1,60 +1,60 @@
-function etiquetaEstado(estado) {
-  if (estado === "coincide") return "Coincide";
-  if (estado === "no_coincide") return "No coincide";
-  if (estado === "sin_dato") return "Sin dato en el documento";
-  if (estado === "incompleto") return "Incompleto";
-  if (estado === "pendiente") return "Pendiente";
-  return estado || "Pendiente";
-}
+"use client";
+
+import { fieldLabel, translateCruceEstado } from "../../lib/i18n";
+import { useI18n } from "./I18nProvider";
 
 export function CruceIdentidad({ identidad, cuentaApta, compact }) {
+  const { t, lang } = useI18n();
   const estado = identidad?.estado || "pendiente";
+  const resumenKey = `cruce.resumen_${estado}`;
   const resumen =
-    identidad?.resumen ||
-    "Todavia no llega el webhook. El cruce se hace cuando Idantite confirma la captura.";
+    estado === "pendiente" || !identidad?.estado
+      ? t("cruce.pending")
+      : t(resumenKey) === resumenKey
+        ? t("cruce.pending")
+        : t(resumenKey);
 
   return (
     <section className={`cruce ${estado}`} aria-labelledby="cruce-title">
       <div className="cruce-head">
-        <h2 id="cruce-title">Datos declarados vs documento</h2>
-        <span className={`badge ${estado}`}>{etiquetaEstado(estado)}</span>
+        <h2 id="cruce-title">{t("cruce.title")}</h2>
+        <span className={`badge ${estado}`}>{translateCruceEstado(lang, estado)}</span>
       </div>
       <p className="cruce-resumen">{resumen}</p>
-      {cuentaApta ? (
-        <p className="cruce-apta">Listo para abrir la cuenta: identidad verificada y datos coinciden.</p>
-      ) : null}
+      {cuentaApta ? <p className="cruce-apta">{t("cruce.apta")}</p> : null}
       {identidad?.campos?.length ? (
         <table className="compare">
-          <caption className="sr-only">Comparacion campo por campo</caption>
+          <caption className="sr-only">{t("cruce.caption")}</caption>
           <thead>
             <tr>
-              <th>Campo</th>
-              <th>Lo que ingreso el cliente</th>
-              <th>Lo que dice el documento</th>
-              <th>Cruce</th>
+              <th>{t("cruce.field")}</th>
+              <th>{t("cruce.declared")}</th>
+              <th>{t("cruce.document")}</th>
+              <th>{t("cruce.match")}</th>
             </tr>
           </thead>
           <tbody>
             {identidad.campos.map((c) => (
               <tr key={c.campo}>
-                <td>{c.etiqueta}</td>
+                <td>{fieldLabel(lang, c.campo, c.etiqueta)}</td>
                 <td>{c.declarado || "—"}</td>
                 <td>{c.documento || "—"}</td>
                 <td>
-                  <span className={`badge ${c.estado}`}>{etiquetaEstado(c.estado)}</span>
+                  <span className={`badge ${c.estado}`}>{translateCruceEstado(lang, c.estado)}</span>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       ) : compact ? null : (
-        <p className="cruce-empty">El cruce aparece aqui cuando llega la decision de Idantite.</p>
+        <p className="cruce-empty">{t("cruce.empty")}</p>
       )}
     </section>
   );
 }
 
-export function badgeCruce(identidad) {
+export function BadgeCruce({ identidad }) {
+  const { lang } = useI18n();
   const estado = identidad?.estado || "pendiente";
-  return <span className={`badge ${estado}`}>{etiquetaEstado(estado)}</span>;
+  return <span className={`badge ${estado}`}>{translateCruceEstado(lang, estado)}</span>;
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { api } from "../lib/api";
 import { tidyNombre, tidyRut, tituloNombre } from "../lib/datos";
+import { useI18n } from "./components/I18nProvider";
 
 const inicial = {
   nombre: "",
@@ -13,6 +14,7 @@ const inicial = {
 };
 
 export default function HomePage() {
+  const { t } = useI18n();
   const [form, setForm] = useState(inicial);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -56,21 +58,17 @@ export default function HomePage() {
 
   return (
     <>
-      <h1>Abre tu cuenta</h1>
+      <h1>{t("home.title")}</h1>
       <p className="lede">
-        Completa tus datos tal como aparecen en tu documento. Si dejas un espacio
-        de mas o escribes en minusculas, lo corregimos al salir del campo.
-        Despues te pedimos selfie y foto del documento (Idantite). La cuenta
-        solo se da por buena si el webhook confirma la identidad y esos datos
-        coinciden con lo que escribiste aqui.{" "}
-        <a href="/como-funciona">Como se envian, reciben y comparan los datos</a>.
+        {t("home.lede")}{" "}
+        <a href="/como-funciona">{t("home.howLink")}</a>.
       </p>
 
       <form className="panel" onSubmit={onSubmit}>
         {error ? <div className="err" role="alert">{error}</div> : null}
         <div className="grid">
           <div>
-            <label htmlFor="nombre">Nombres</label>
+            <label htmlFor="nombre">{t("home.nombres")}</label>
             <input
               id="nombre"
               name="nombre"
@@ -82,7 +80,7 @@ export default function HomePage() {
             />
           </div>
           <div>
-            <label htmlFor="apellido">Apellidos</label>
+            <label htmlFor="apellido">{t("home.apellidos")}</label>
             <input
               id="apellido"
               name="apellido"
@@ -94,7 +92,7 @@ export default function HomePage() {
             />
           </div>
         </div>
-        <label htmlFor="rut">RUT</label>
+        <label htmlFor="rut">{t("home.rut")}</label>
         <input
           id="rut"
           name="rut"
@@ -103,7 +101,7 @@ export default function HomePage() {
           onChange={(e) => set("rut", e.target.value)}
           onBlur={blurRut}
         />
-        <label htmlFor="email">Correo</label>
+        <label htmlFor="email">{t("home.email")}</label>
         <input
           id="email"
           name="email"
@@ -113,7 +111,7 @@ export default function HomePage() {
           value={form.email}
           onChange={(e) => set("email", e.target.value)}
         />
-        <label htmlFor="telefono">Telefono</label>
+        <label htmlFor="telefono">{t("home.telefono")}</label>
         <input
           id="telefono"
           name="telefono"
@@ -121,28 +119,24 @@ export default function HomePage() {
           value={form.telefono}
           onChange={(e) => set("telefono", e.target.value)}
         />
-        <p className="hint">
-          Al salir de nombres o RUT, recortamos espacios y unificamos
-          mayusculas. El backend vuelve a hacer lo mismo antes de guardar.
-        </p>
+        <p className="hint">{t("home.hint")}</p>
         <button type="submit" disabled={busy}>
-          {busy ? "Creando sesion..." : "Continuar a verificacion"}
+          {busy ? t("home.busy") : t("home.submit")}
         </button>
       </form>
 
       <div className="steps">
         <div>
-          <b>1. Tus datos</b>
-          Nombre, apellido y RUT quedan en nuestra SQLite, ya limpios.
+          <b>{t("home.step1t")}</b>
+          {t("home.step1")}
         </div>
         <div>
-          <b>2. Captura</b>
-          Selfie y documento en validacion.genbia.qzz.io. Ahi no viaja nuestra API key.
+          <b>{t("home.step2t")}</b>
+          {t("home.step2")}
         </div>
         <div>
-          <b>3. Cruce</b>
-          El webhook llega firmado. Ademas de la decision de Idantite, comparamos
-          OCR contra lo que escribiste.
+          <b>{t("home.step3t")}</b>
+          {t("home.step3")}
         </div>
       </div>
     </>
