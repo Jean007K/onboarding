@@ -1,0 +1,35 @@
+import "./globals.css";
+
+export const metadata = {
+  title: "Ayiti — apertura de cuenta",
+  description: "Demo de onboarding usando Idantite para verificar identidad",
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="es">
+      <body>
+        <div className="shell">
+          <header className="top">
+            <a className="brand" href="/">
+              <span className="mark" aria-hidden="true" />
+              <span>
+                <strong>Ayiti</strong>
+                <small>Apertura de cuenta</small>
+              </span>
+            </a>
+            <nav>
+              <a href="/">Nueva solicitud</a>
+              <a href="/verificaciones">Expedientes</a>
+            </nav>
+          </header>
+          <main>{children}</main>
+          <footer>
+            Este sitio es un ejemplo de cliente. La verificacion la hace Idantite.
+            La decision se confirma por webhook en nuestro backend, no por la pantalla de captura.
+          </footer>
+        </div>
+      </body>
+    </html>
+  );
+}

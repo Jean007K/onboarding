@@ -1,0 +1,15 @@
+.env
+.env.local
+*.db
+*.db-journal
+data/
+node_modules/
+.next/
+out/
+dist/
+backend/server
+frontend/.next/
+frontend/node_modules/
+.DS_Store
+Thumbs.db
+*.log

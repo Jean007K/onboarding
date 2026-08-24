@@ -1,0 +1,183 @@
+@import url("https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
+
+:root {
+  --ink: #0b1f4b;
+  --ink-2: #24365f;
+  --paper: #f4efe4;
+  --card: #fffdf8;
+  --line: #d7cfc0;
+  --red: #c8102e;
+  --red-dark: #9a0c23;
+  --ok: #1b6b3a;
+  --wait: #8a5a12;
+  --bad: #8a1c1c;
+  --focus: #0b1f4b;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "Public Sans", "Segoe UI", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 500px at 10% -10%, #e7d9c4 0%, transparent 55%),
+    var(--paper);
+  min-height: 100vh;
+  line-height: 1.45;
+}
+
+.shell {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 3px solid var(--ink);
+  margin-bottom: 28px;
+}
+
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+.brand strong { display: block; font-size: 1.35rem; letter-spacing: -0.02em; }
+.brand small { color: var(--ink-2); font-size: 0.8rem; }
+.mark {
+  width: 14px;
+  height: 42px;
+  background: linear-gradient(#0b1f4b 50%, #c8102e 50%);
+}
+
+nav { display: flex; gap: 18px; }
+nav a {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+}
+nav a:hover { border-bottom-color: var(--red); }
+
+h1 { font-size: 1.85rem; margin: 0 0 8px; letter-spacing: -0.03em; }
+.lede { color: var(--ink-2); margin: 0 0 22px; max-width: 62ch; }
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 24px;
+  box-shadow: 0 10px 24px rgba(11, 31, 75, 0.06);
+}
+
+label { display: block; font-weight: 600; font-size: 0.86rem; margin: 0 0 6px; }
+input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #c9c1b2;
+  border-radius: 2px;
+  font: inherit;
+  background: #fff;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+input:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+
+button, .btn {
+  appearance: none;
+  border: 0;
+  background: var(--red);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  padding: 12px 18px;
+  cursor: pointer;
+  border-radius: 2px;
+  text-decoration: none;
+  display: inline-block;
+}
+button:hover, .btn:hover { background: var(--red-dark); }
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+button.ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+
+.err {
+  background: #f8e6e6;
+  color: var(--bad);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border: 1px solid #e3b6b6;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin: 22px 0 0;
+}
+.steps div {
+  border-top: 3px solid var(--ink);
+  padding-top: 10px;
+  font-size: 0.9rem;
+}
+.steps b { display: block; margin-bottom: 4px; }
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.badge.aprobado { background: #d7eedd; color: var(--ok); }
+.badge.rechazado { background: #f3d4d4; color: var(--bad); }
+.badge.revision { background: #f4e4c4; color: var(--wait); }
+.badge.pendiente, .badge.esperando_captura, .badge.creando_sesion, .badge.procesando {
+  background: #e4e8f2; color: var(--ink-2);
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-2); }
+a.row { color: inherit; }
+
+.kv { display: grid; grid-template-columns: 180px 1fr; gap: 8px 16px; }
+.kv b { font-size: 0.82rem; color: var(--ink-2); }
+pre {
+  background: #0b1f4b;
+  color: #f4efe4;
+  padding: 14px;
+  overflow: auto;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+footer {
+  margin-top: 36px;
+  font-size: 0.82rem;
+  color: var(--ink-2);
+  max-width: 70ch;
+}
+
+@media (max-width: 700px) {
+  .grid, .steps, .kv { grid-template-columns: 1fr; }
+  .top { flex-direction: column; align-items: flex-start; }
+}
