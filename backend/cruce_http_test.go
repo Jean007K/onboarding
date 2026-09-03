@@ -97,7 +97,7 @@ func TestHTTPWebhookFirmaYCruce(t *testing.T) {
 	defer db.Close()
 
 	secret := "webhook-test-secret"
-	h := newServer(Config{IdantiteWebhookSecret: secret}, db)
+	h := newServer(Config{EmveraxWebhookSecret: secret}, db)
 
 	id := newID()
 	now := nowUTC()

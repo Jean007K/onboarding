@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Extraido es lo que nos interesa del OCR de Idantite (extracted_data).
+// Extraido es lo que nos interesa del OCR de Emverax (extracted_data).
 type Extraido struct {
 	Nombres   string
 	Apellidos string

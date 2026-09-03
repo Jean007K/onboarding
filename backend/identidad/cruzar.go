@@ -30,7 +30,7 @@ type Campo struct {
 	Estado    EstadoCampo `json:"estado"`
 }
 
-// Resultado es el cruce formulario vs OCR. Lo calcula este modulo, no Idantite.
+// Resultado es el cruce formulario vs OCR. Lo calcula este modulo, no Emverax.
 type Resultado struct {
 	Estado   string  `json:"estado"`
 	Coincide bool    `json:"coincide"`

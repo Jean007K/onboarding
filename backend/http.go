@@ -14,11 +14,11 @@ import (
 type Server struct {
 	cfg      Config
 	db       *sql.DB
-	idantite *Idantite
+	idantite *Emverax
 }
 
 func newServer(cfg Config, db *sql.DB) http.Handler {
-	s := &Server{cfg: cfg, db: db, idantite: newIdantite(cfg)}
+	s := &Server{cfg: cfg, db: db, idantite: newEmverax(cfg)}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", s.health)
 	mux.HandleFunc("POST /webhooks/idantite", s.webhook)
@@ -26,7 +26,7 @@ func newServer(cfg Config, db *sql.DB) http.Handler {
 	mux.HandleFunc("GET /api/solicitudes/{id}", s.verSolicitud)
 	mux.HandleFunc("GET /api/verificaciones", s.listar)
 	mux.HandleFunc("GET /api/verificaciones/{id}", s.verSolicitud)
-	mux.HandleFunc("POST /api/verificaciones/{id}/consultar", s.consultarIdantite)
+	mux.HandleFunc("POST /api/verificaciones/{id}/consultar", s.consultarEmverax)
 	return withCORS(cfg.CORSOrigin, mux)
 }
 
@@ -34,9 +34,9 @@ func (s *Server) health(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, map[string]any{
 		"ok":                      true,
 		"servicio":                "ayiti-onboarding-api",
-		"idantite_key":            s.cfg.IdantiteAPIKey != "",
-		"idantite_webhook_secret": s.cfg.IdantiteWebhookSecret != "",
-		"environment":             s.cfg.IdantiteEnvironment,
+		"idantite_key":            s.cfg.EmveraxAPIKey != "",
+		"idantite_webhook_secret": s.cfg.EmveraxWebhookSecret != "",
+		"environment":             s.cfg.EmveraxEnvironment,
 	})
 }
 
@@ -67,8 +67,8 @@ func (s *Server) crearSolicitud(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "falta el RUT")
 		return
 	}
-	if s.cfg.IdantiteAPIKey == "" {
-		writeErr(w, 503, "este servidor todavia no tiene la API key de Idantite")
+	if s.cfg.EmveraxAPIKey == "" {
+		writeErr(w, 503, "este servidor todavia no tiene la API key de Emverax")
 		return
 	}
 
@@ -97,13 +97,13 @@ func (s *Server) crearSolicitud(w http.ResponseWriter, r *http.Request) {
 	returnURL := s.cfg.PublicAppURL + "/resultado?id=" + id
 	ses, err := s.idantite.crearSesion(ref, returnURL)
 	if err != nil {
-		log.Println("crear sesion Idantite:", err)
-		writeErr(w, 502, "Idantite no pudo crear la sesion: "+err.Error())
+		log.Println("crear sesion Emverax:", err)
+		writeErr(w, 502, "Emverax no pudo crear la sesion: "+err.Error())
 		return
 	}
 	if err := updateSesion(s.db, id, ses.SessionID, ses.ShareToken); err != nil {
 		log.Println("db update sesion:", err)
-		writeErr(w, 500, "sesion creada en Idantite pero no se pudo guardar aqui")
+		writeErr(w, 500, "sesion creada en Emverax pero no se pudo guardar aqui")
 		return
 	}
 
@@ -111,7 +111,7 @@ func (s *Server) crearSolicitud(w http.ResponseWriter, r *http.Request) {
 		"id":           id,
 		"end_user_ref": ref,
 		"session_id":   ses.SessionID,
-		"capture_url":  captureURL(s.cfg.IdantiteCaptureURL, ses.SessionID, ses.ShareToken),
+		"capture_url":  captureURL(s.cfg.EmveraxCaptureURL, ses.SessionID, ses.ShareToken),
 		"return_url":   returnURL,
 		"aviso":        "manda al usuario a capture_url. la decision real llega por webhook, no por el redirect",
 	})
@@ -141,9 +141,9 @@ func (s *Server) listar(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, map[string]any{"items": list})
 }
 
-// consultarIdantite es el plan B: si el webhook tarda, tu backend puede
-// preguntar a Idantite GET /v2/sessions/:id con la API key.
-func (s *Server) consultarIdantite(w http.ResponseWriter, r *http.Request) {
+// consultarEmverax es el plan B: si el webhook tarda, tu backend puede
+// preguntar a Emverax GET /v2/sessions/:id con la API key.
+func (s *Server) consultarEmverax(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	sol, err := getSolicitud(s.db, id)
 	if err == sql.ErrNoRows {
@@ -178,13 +178,13 @@ func (s *Server) webhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sig := r.Header.Get("X-IDANTITE-Signature")
-	ok := firmaValida(s.cfg.IdantiteWebhookSecret, raw, sig)
+	ok := firmaValida(s.cfg.EmveraxWebhookSecret, raw, sig)
 	var evt WebhookEvent
 	_ = json.Unmarshal(raw, &evt)
 	sessionID := evt.SessionID
 	logWebhook(s.db, evt.Event, sessionID, ok, raw)
 
-	if s.cfg.IdantiteWebhookSecret == "" {
+	if s.cfg.EmveraxWebhookSecret == "" {
 		writeErr(w, 503, "este servidor todavia no tiene IDANTITE_WEBHOOK_SECRET")
 		return
 	}
@@ -209,7 +209,7 @@ func (s *Server) webhook(w http.ResponseWriter, r *http.Request) {
 	approved := data.Approved
 	_ = aplicarResultado(s.db, sessionID, evt.Event, decision, approved, data.Scores, data.Reasons, data.Extracted)
 
-	// Si Idantite manda un evento de una sesion que no creamos, igual respondemos 200
+	// Si Emverax manda un evento de una sesion que no creamos, igual respondemos 200
 	// para que no reintente forever. El log queda en webhook_log.
 	writeJSON(w, 200, map[string]any{"received": true})
 }

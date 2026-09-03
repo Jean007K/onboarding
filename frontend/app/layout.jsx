@@ -4,7 +4,7 @@ import Shell from "./components/Shell";
 
 export const metadata = {
   title: "Onboarding — account opening",
-  description: "Customer onboarding demo using Idantite for identity verification",
+  description: "Customer onboarding demo using Emverax for identity verification",
 };
 
 export default function RootLayout({ children }) {

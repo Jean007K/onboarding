@@ -9,21 +9,21 @@ import (
 	"time"
 )
 
-// Cliente minimo de Idantite.
+// Cliente minimo de Emverax.
 // La API key NUNCA sale de este servidor. El navegador no la ve.
 
-type Idantite struct {
+type Emverax struct {
 	baseURL     string
 	apiKey      string
 	environment string
 	http        *http.Client
 }
 
-func newIdantite(cfg Config) *Idantite {
-	return &Idantite{
-		baseURL:     cfg.IdantiteAPIURL,
-		apiKey:      cfg.IdantiteAPIKey,
-		environment: cfg.IdantiteEnvironment,
+func newEmverax(cfg Config) *Emverax {
+	return &Emverax{
+		baseURL:     cfg.EmveraxAPIURL,
+		apiKey:      cfg.EmveraxAPIKey,
+		environment: cfg.EmveraxEnvironment,
 		http:        &http.Client{Timeout: 25 * time.Second},
 	}
 }
@@ -34,7 +34,7 @@ type crearSesionReq struct {
 	ReturnURL    string `json:"return_url"`
 }
 
-type SesionIdantite struct {
+type SesionEmverax struct {
 	SessionID    string          `json:"session_id"`
 	ShareToken   string          `json:"share_token"`
 	ReturnURL    string          `json:"return_url"`
@@ -49,29 +49,29 @@ type SesionIdantite struct {
 	WorkflowType string          `json:"workflow_type"`
 }
 
-func (c *Idantite) crearSesion(endUserRef, returnURL string) (SesionIdantite, error) {
+func (c *Emverax) crearSesion(endUserRef, returnURL string) (SesionEmverax, error) {
 	body, _ := json.Marshal(crearSesionReq{
 		EndUserRef:   endUserRef,
 		WorkflowType: "document_selfie",
 		ReturnURL:    returnURL,
 	})
-	var out SesionIdantite
+	var out SesionEmverax
 	if err := c.do("POST", "/v2/sessions", body, &out); err != nil {
 		return out, err
 	}
 	if out.SessionID == "" {
-		return out, fmt.Errorf("Idantite no devolvio session_id")
+		return out, fmt.Errorf("Emverax no devolvio session_id")
 	}
 	return out, nil
 }
 
-func (c *Idantite) consultarSesion(sessionID string) (SesionIdantite, error) {
-	var out SesionIdantite
+func (c *Emverax) consultarSesion(sessionID string) (SesionEmverax, error) {
+	var out SesionEmverax
 	err := c.do("GET", "/v2/sessions/"+sessionID, nil, &out)
 	return out, err
 }
 
-func (c *Idantite) do(method, path string, body []byte, dest any) error {
+func (c *Emverax) do(method, path string, body []byte, dest any) error {
 	if c.apiKey == "" {
 		return fmt.Errorf("falta IDANTITE_API_KEY en el servidor")
 	}
@@ -96,13 +96,13 @@ func (c *Idantite) do(method, path string, body []byte, dest any) error {
 	defer res.Body.Close()
 	raw, _ := io.ReadAll(res.Body)
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return fmt.Errorf("Idantite %s %s -> %d: %s", method, path, res.StatusCode, recortar(raw, 400))
+		return fmt.Errorf("Emverax %s %s -> %d: %s", method, path, res.StatusCode, recortar(raw, 400))
 	}
 	if dest == nil || len(raw) == 0 {
 		return nil
 	}
 	if err := json.Unmarshal(raw, dest); err != nil {
-		return fmt.Errorf("respuesta Idantite no es JSON: %w", err)
+		return fmt.Errorf("respuesta Emverax no es JSON: %w", err)
 	}
 	return nil
 }

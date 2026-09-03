@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// Header que manda Idantite: X-IDANTITE-Signature
+// Header que manda Emverax: X-IDANTITE-Signature
 // Valor = hex(HMAC-SHA256(secret, cuerpo_crudo))
 //
 // Hay que firmar el body TAL CUAL llega. Si lo parseas a JSON primero
@@ -29,7 +29,7 @@ func firmaValida(secret string, rawBody []byte, signatureHex string) bool {
 	return hmac.Equal(a, b)
 }
 
-// WebhookEvent es lo que Idantite pega a nuestro endpoint.
+// WebhookEvent es lo que Emverax pega a nuestro endpoint.
 // Eventos: verification.completed, verification.reviewed, verification.resubmission_requested
 type WebhookEvent struct {
 	Event     string          `json:"event"`

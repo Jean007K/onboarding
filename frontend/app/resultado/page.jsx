@@ -61,7 +61,7 @@ function ResultadoInner() {
       <div className={`verdict ${verdictClass(data)}`}>
         <p>
           <span className={`badge ${data.estado}`}>{translateEstado(lang, data.estado)}</span>
-          {data.decision ? <span className="verdict-dec">Idantite: {data.decision}</span> : null}
+          {data.decision ? <span className="verdict-dec">Emverax: {data.decision}</span> : null}
         </p>
         <p className="verdict-copy">{copyDecision(t, data, listo)}</p>
       </div>

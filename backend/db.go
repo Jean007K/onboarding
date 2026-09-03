@@ -17,7 +17,7 @@ import (
 )
 
 // Solicitud es el expediente que GUARDA ESTA EMPRESA (Ayiti).
-// Idantite no es nuestra base de datos. Lo que nos importa para el negocio
+// Emverax no es nuestra base de datos. Lo que nos importa para el negocio
 // queda aqui: quien es el cliente, si ya lo verificamos, y que datos nos
 // devolvieron en el webhook.
 type Solicitud struct {

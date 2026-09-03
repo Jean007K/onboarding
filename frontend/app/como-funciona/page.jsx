@@ -27,7 +27,7 @@ export default function ComoFuncionaPage() {
           <p>{t("how.ayitiP")}</p>
         </div>
         <div>
-          <b>Idantite</b>
+          <b>Emverax</b>
           <p>{t("how.idantiteP")}</p>
         </div>
       </div>
@@ -65,7 +65,7 @@ export default function ComoFuncionaPage() {
             {t("how.s3b")}
             <code>share_token</code>
             {t("how.s3c")}
-            <code>validacion.genbia.qzz.io/?session=…&amp;t=…</code>
+            <code>verify.emverax.com/?session=…&amp;t=…</code>
             {t("how.s3d")}
             <code>t=</code>
             {t("how.s3e")}

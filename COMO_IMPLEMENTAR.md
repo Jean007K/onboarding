@@ -1,17 +1,17 @@
-# Como implementar Idantite en tu empresa
+# Como implementar Emverax en tu empresa
 
 Esto es lo que tienes que armar del lado tuyo. El ejemplo de este repo es una version chica con Next y Go + SQLite. En produccion usas tu stack, pero el orden es el mismo.
 
-## 1. Cosas que te da Idantite
+## 1. Cosas que te da Emverax
 
-En el panel (https://panel.genbia.qzz.io) creas la organizacion y sacas:
+En el panel (https://dash.emverax.com) creas la organizacion y sacas:
 
 - Una API key de sandbox para probar.
 - Una API key live cuando vayas a gente real.
 - Un endpoint de webhook: URL tuya + un secret HMAC.
 
-API de ellos: `https://api-go.genbia.qzz.io`
-Captura: `https://validacion.genbia.qzz.io`
+API de ellos: `https://api.emverax.com`
+Captura: `https://verify.emverax.com`
 
 Header de maquina: `X-API-Key`.
 Entorno: `X-Environment: sandbox` o `live`.
@@ -21,7 +21,7 @@ Entorno: `X-Environment: sandbox` o `live`.
 Necesitas:
 
 1. Un backend que pueda guardar un expediente (quien es la persona, `session_id`, estado).
-2. Una URL HTTPS publica para el webhook. Idantite no acepta localhost ni IPs privadas.
+2. Una URL HTTPS publica para el webhook. Emverax no acepta localhost ni IPs privadas.
 3. Un lugar donde el usuario vuelve despues de la captura (`return_url`).
 4. La API key y el webhook secret SOLO en el servidor. Env vars, vault, lo que uses. Nunca en el JS del browser.
 
@@ -32,7 +32,7 @@ SQLite sirve para este demo. En serio, usa Postgres o lo que ya tengas.
 Cuando el usuario da "quiero verificarme":
 
 ```
-POST https://api-go.genbia.qzz.io/v2/sessions
+POST https://api.emverax.com/v2/sessions
 X-API-Key: TU_KEY
 X-Environment: sandbox
 Content-Type: application/json
@@ -49,7 +49,7 @@ Content-Type: application/json
 Te responden `session_id` y `share_token`. Armas el link:
 
 ```
-https://validacion.genbia.qzz.io/?session=SESSION_ID&t=SHARE_TOKEN
+https://verify.emverax.com/?session=SESSION_ID&t=SHARE_TOKEN
 ```
 
 Redirect del browser a ese link. Listo. El usuario no ve tu API key.
@@ -62,7 +62,7 @@ URL de este demo:
 https://api.onboarding.ayiti.cc.cd/webhooks/idantite
 ```
 
-En el panel de Idantite pegas esa URL y te dan un secret.
+En el panel de Emverax pegas esa URL y te dan un secret.
 
 Cuando llega el POST:
 
@@ -97,7 +97,7 @@ Regla:
 - Si tu tabla dice `aprobado` porque llego un webhook con firma buena y `decision=APPROVE`, ahi si.
 - Si quieres un plan B, tu backend llama `GET /v2/sessions/:id` con la API key y copia el estado. Este demo lo hace en `POST /api/verificaciones/{id}/consultar`.
 
-Consultar despues: guarda `session_id` y `end_user_ref`. Con eso buscas en tu base, o vuelves a preguntar a Idantite.
+Consultar despues: guarda `session_id` y `end_user_ref`. Con eso buscas en tu base, o vuelves a preguntar a Emverax.
 
 ## 6. Que NO hacer
 
